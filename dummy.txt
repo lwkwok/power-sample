@@ -1,0 +1,124 @@
+## Core Calculation vs. Scenario-Based Scoring
+
+The Identity Risk Score should be calculated using two complementary layers: the **core calculation** and the **scenario-based scoring**. These two layers work together to provide both a stable baseline view of identity risk and a contextual view of risk based on specific business situations or behavioural signals.
+
+## 1. Core Calculation
+
+The **core calculation** represents the baseline identity risk. It focuses on what access the person has today and how sensitive that access is.
+
+The core calculation should answer the question:
+
+**“Based on this person’s current access, applications, entitlements, and business context, how risky is this identity?”**
+
+The core calculation should include factors such as:
+
+* Whether the entitlement is privileged or non-privileged
+* Whether the application is critical
+* Whether the application processes client data
+* Whether the application supports trading activities
+* Whether the application supports financial or money movement activities
+* Whether the entitlement itself is considered high-risk or low-risk based on the AI entitlement risk model
+* The sensitivity of the business function supported by the application
+
+In Phase 1, the score mainly looked at application criticality and whether the entitlement was privileged. In Phase 2, the core calculation should become richer by using application portfolio data and the AI entitlement risk output.
+
+For example, access to a non-critical application may still carry higher risk if the application processes client data or supports financial activities. Similarly, a non-privileged entitlement may still be considered higher risk if the AI model identifies the entitlement as sensitive based on usage pattern, business meaning, or historical risk.
+
+The core calculation should be recalculated regularly, ideally daily. If a user receives new high-risk access, loses access, or if the application or entitlement risk changes, the core score should change accordingly.
+
+## 2. Scenario-Based Scoring
+
+The **scenario-based scoring** represents contextual or conditional risk. It focuses less on what access the person has and more on the situation around the person.
+
+The scenario-based score should answer the question:
+
+**“Given this person’s current situation, should their risk be temporarily or contextually elevated?”**
+
+Scenario-based factors may include:
+
+* Employee is under financial monitoring, such as a trader or regulated employee
+* Employee has poor performance review results
+* Employee is on a Performance Improvement Plan
+* Employee has formal disciplinary action
+* Employee has submitted resignation notice
+* Employee is in an offboarding window
+* Employee has incomplete mandatory training
+* Employee has behavioural or HR-related indicators that may increase insider risk
+
+These factors should not always change the baseline access risk directly. Instead, they should adjust or supplement the risk score when a specific condition is true.
+
+For example, two employees may have the same access to the same high-risk application. Under the core calculation, they may have the same baseline access risk. However, if one employee has submitted resignation notice or is under formal performance review, the scenario-based score may increase their overall risk because the business context has changed.
+
+## 3. How They Work Together
+
+The core calculation and scenario-based scoring should not compete with each other. They should work together.
+
+The core score provides the stable baseline.
+The scenario score provides the contextual adjustment.
+
+A simple way to explain it is:
+
+**Core calculation = what access they have.**
+**Scenario-based scoring = what situation they are in.**
+
+Together, they produce a more complete Identity Risk Score.
+
+For example:
+
+An employee has access to a trading application that processes client data. The core calculation would already rate this identity higher because the application and entitlement are sensitive.
+
+If the same employee is also under financial monitoring or has submitted resignation notice, the scenario-based score may further elevate the overall risk.
+
+This creates a layered model:
+
+1. Start with the core access-based risk.
+2. Add application and entitlement sensitivity.
+3. Apply AI entitlement risk output.
+4. Add scenario-based adjustments where relevant.
+5. Produce the final overall Identity Risk Score.
+6. Keep the sub-scores visible so downstream systems can understand why the score is high.
+
+## 4. Why Both Are Needed
+
+The core calculation alone is not enough because it only tells us whether the access is sensitive. It does not explain whether the person is currently in a higher-risk situation.
+
+The scenario-based score alone is also not enough because a behavioural or HR signal is only meaningful when combined with actual access. A resignation notice may be low risk if the person has no sensitive access, but much higher risk if the person has privileged access to client-data or financial systems.
+
+That is why both layers are needed.
+
+The best model is not simply:
+
+**High-risk person = bad behaviour.**
+
+The better model is:
+
+**High-risk identity = sensitive access + sensitive business context + relevant scenario indicators.**
+
+## 5. Recommended Phase 2 Design
+
+For Phase 2, the Identity Risk Score should include:
+
+* One overall final score
+* A core access risk score
+* An application risk sub-score
+* An entitlement risk sub-score
+* An AI entitlement risk sub-score
+* A scenario-based risk sub-score
+* A history table showing when and why the score changed
+
+This will allow downstream applications to either use the final score or select the specific sub-score that is most relevant to their use case.
+
+For example:
+
+* Access review may care more about entitlement and application risk.
+* Security monitoring may care more about behaviour and scenario-based risk.
+* Executive reporting may care more about the final overall score and trend.
+* IAM operations may care more about why the score changed.
+
+## 6. Summary
+
+The core calculation is the foundation of the Identity Risk Score. It measures the inherent risk of a person’s access based on applications, entitlements, privilege, client data, trading activity, financial activity, and AI entitlement risk.
+
+The scenario-based scoring adds business and behavioural context. It measures whether the person is currently in a situation that could increase risk, such as financial monitoring, poor performance status, resignation notice, offboarding, or incomplete training.
+
+Together, these two layers create a more accurate and explainable Identity Risk Score. The core calculation explains the baseline risk. The scenario-based score explains why the risk may be elevated under specific conditions.
